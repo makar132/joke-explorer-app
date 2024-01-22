@@ -15,20 +15,26 @@ import androidx.compose.animation.slideIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.shapes
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -59,6 +65,7 @@ fun JokeCard(joke : Joke, modifier : Modifier) {
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         modifier = modifier
             .padding(16.dp)
+            .animateContentSize()
     ) {
         Column(
             modifier = Modifier.padding(16.dp)
@@ -69,6 +76,28 @@ fun JokeCard(joke : Joke, modifier : Modifier) {
                 style = typography.titleLarge
             )
             Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth()
+                , verticalAlignment=Alignment.CenterVertically
+                , horizontalArrangement = Arrangement.Start
+            ) {
+                AnimatedVisibility(
+                    visible = joke.getJokeFlags(joke.flags).isNotEmpty(),
+                ) {
+                Icon(
+                    Icons.Default.Warning,
+                    tint = Color.Red,
+                    contentDescription = null,
+                )
+                }
+
+                Text(
+                    modifier =Modifier.padding(4.dp),
+                    text = joke.getJokeFlags(joke.flags),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+
             if (joke.setup != null && joke.delivery != null) {
                 // Two-part joke
                 Text(
@@ -96,17 +125,7 @@ fun JokeCard(joke : Joke, modifier : Modifier) {
                     )
                 }
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            AnimatedVisibility(
-                visible = joke.getJokeFlags(joke.flags).isNotEmpty(),
-                enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300))
-            ) {
-                Text(
-                    text = joke.getJokeFlags(joke.flags),
-                    style = typography.labelSmall
-                )
-            }
+
 
 
             // Optionally display additional information (category, flags)

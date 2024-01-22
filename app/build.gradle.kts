@@ -78,4 +78,9 @@ dependencies {
     implementation("io.insert-koin:koin-android:$koin_android_version")
     implementation("io.insert-koin:koin-androidx-compose:$koin_android_compose_version")
 
+    //shimmer
+    implementation ("com.facebook.shimmer:shimmer:0.5.0")
+    implementation("com.valentinilk.shimmer:compose-shimmer:1.2.0")
+
+
 }

@@ -3,12 +3,22 @@ package com.example.jokeexplorer.presentation.viewmodels
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
+import androidx.paging.map
+import com.example.jokeexplorer.data.local.entities.JokeEntity
+import com.example.jokeexplorer.data.mappers.toJoke
 import com.example.jokeexplorer.data.model.Joke
 import com.example.jokeexplorer.data.repository.JokeRepository
+import com.example.jokeexplorer.presentation.ui.screens.jokeList.JokeListPaging
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -24,6 +34,16 @@ class JokeListViewModel() :ViewModel(),KoinComponent{
     private val _loadingInitialJokeList= MutableStateFlow(true)
     val loadingInitialJokeList: StateFlow<Boolean>
         get() = _loadingInitialJokeList
+
+    private val pager:Pager<Int,JokeEntity> by inject()
+    val jokePagingFlow= pager
+        .flow
+        .map {
+            pagingData->
+            pagingData.map {
+                it.toJoke()
+            }
+        }.cachedIn(viewModelScope)
 
     init {
         viewModelScope.launch {

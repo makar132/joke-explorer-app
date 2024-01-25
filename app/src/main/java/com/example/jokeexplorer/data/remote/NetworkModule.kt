@@ -1,5 +1,6 @@
 package com.example.jokeexplorer.data.remote
 
+import com.example.jokeexplorer.data.remote.api.JokeApi
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -11,7 +12,7 @@ class NetworkModule {
             .build()
     }
 
-    fun provideJokeService(retrofit: Retrofit): JokeApiService {
-        return retrofit.create(JokeApiService::class.java)
+    fun provideJokeApi(retrofit: Retrofit): JokeApi {
+        return retrofit.create(JokeApi::class.java)
     }
 }

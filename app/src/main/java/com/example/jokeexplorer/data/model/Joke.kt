@@ -14,11 +14,11 @@ data class Joke(
     fun getJokeFlags(jokeFlags : JokeFlags):String{
         val flags= mutableListOf<String>()
         if(jokeFlags.nsfw)flags.add("nsfw")
-        if(jokeFlags.religious)flags.add("nsfw")
-        if(jokeFlags.political)flags.add("nsfw")
-        if(jokeFlags.racist)flags.add("nsfw")
-        if(jokeFlags.sexist)flags.add("nsfw")
-        if(jokeFlags.explicit)flags.add("nsfw")
+        if(jokeFlags.religious)flags.add("religious")
+        if(jokeFlags.political)flags.add("political")
+        if(jokeFlags.racist)flags.add("racist")
+        if(jokeFlags.sexist)flags.add("sexist")
+        if(jokeFlags.explicit)flags.add("explicit")
 
         return flags.joinToString(",")
     }

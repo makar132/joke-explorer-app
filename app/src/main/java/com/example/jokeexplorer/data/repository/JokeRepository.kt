@@ -1,10 +1,10 @@
 package com.example.jokeexplorer.data.repository
 
 import com.example.jokeexplorer.data.model.Joke
-import com.example.jokeexplorer.data.remote.JokeApiService
+import com.example.jokeexplorer.data.remote.api.JokeApi
 import retrofit2.awaitResponse
 
-class JokeRepository (private val jokeService: JokeApiService){
+class JokeRepository (private val jokeService: JokeApi){
     suspend fun getRandomJoke(): Joke? {
 
         val response = jokeService.getRandomJoke().awaitResponse()

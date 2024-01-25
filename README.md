@@ -29,4 +29,4 @@ Welcome to the Joke Explorer project! This app aims to bring a smile to your fac
 
 Ready to contribute to a project that's guaranteed to bring smiles? Check out the issues section for tasks and dive into the code!
 
-Let's build an app that leaves everyone in stitches! 
+

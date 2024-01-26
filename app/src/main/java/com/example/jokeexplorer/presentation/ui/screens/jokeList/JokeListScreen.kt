@@ -24,18 +24,25 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemContentType
+import androidx.paging.compose.itemKey
+import com.example.jokeexplorer.data.local.entities.JokeEntity
+import com.example.jokeexplorer.data.model.Joke
 import com.example.jokeexplorer.presentation.viewmodels.JokeListViewModel
 import com.example.jokeexplorer.util.*
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun JokeScreen(viewModel : JokeListViewModel = viewModel()) {
+fun JokeScreen() {
+    val viewModel : JokeListViewModel = viewModel()
     val currentJoke by viewModel.currentJokeListFlow.collectAsState()
     val initialLoading by viewModel.loadingInitialJokeList.collectAsState()
     val initialListSize = viewModel.pageJokesCount
     val pagingJokes = viewModel.jokePagingFlow.collectAsLazyPagingItems()
+
     // Remember a CoroutineScope , listState
     val listState = rememberLazyListState()
     val autoLoaderBuffer = 3
@@ -48,12 +55,30 @@ fun JokeScreen(viewModel : JokeListViewModel = viewModel()) {
     }
     val context = LocalContext.current
     LaunchedEffect(pagingJokes.loadState) {
-        if(pagingJokes.loadState.refresh is LoadState.Error){
-            Toast.makeText(
-                context,
-                "Error: ${(pagingJokes.loadState.refresh as LoadState.Error).error.message}",
-                Toast.LENGTH_LONG
-            ).show()
+        when (pagingJokes.loadState.refresh) {
+            is LoadState.Error -> {
+                Toast.makeText(
+                    context,
+                    "Error: ${(pagingJokes.loadState.refresh as LoadState.Error).error.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            is LoadState.Loading -> {
+                Toast.makeText(
+                    context,
+                    "Loading: ${(pagingJokes.loadState.refresh as LoadState.Loading).endOfPaginationReached}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+            is LoadState.NotLoading -> {
+                Toast.makeText(
+                    context,
+                    "Not Loading: ${(pagingJokes.loadState.refresh as LoadState.NotLoading).endOfPaginationReached}",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
 
     }
@@ -107,10 +132,11 @@ fun JokeScreen(viewModel : JokeListViewModel = viewModel()) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    state = listState
                 ) {
-                    items(pagingJokes.itemCount) { index ->
-                        val joke=pagingJokes[index]
+                    items(pagingJokes.itemCount,key=pagingJokes.itemKey{it.id}) { index ->
+                        val joke=pagingJokes.peek(index)
                         if(joke != null) {
                             jokeItem(
                                 joke = joke,
@@ -120,6 +146,7 @@ fun JokeScreen(viewModel : JokeListViewModel = viewModel()) {
                     }
                     item {
                         if(pagingJokes.loadState.append is LoadState.Loading) {
+
                             CircularProgressIndicator()
                         }
                     }

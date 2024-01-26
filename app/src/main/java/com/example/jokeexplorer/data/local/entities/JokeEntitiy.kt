@@ -21,6 +21,7 @@ data class JokeEntity(
     val language: String="",
     var localId:Int=0
 )
+
 class JokeFlagsTypeConverter{
     @TypeConverter
     fun fromJokeFlags(jokeFlags : JokeFlags):String {

@@ -1,20 +1,24 @@
 package com.example.jokeexplorer.data.remote
 
+import android.icu.util.TimeUnit
 import android.net.http.HttpException
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresExtension
+import androidx.compose.ui.platform.LocalContext
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
+import androidx.paging.log
 import androidx.room.withTransaction
 import com.example.jokeexplorer.data.local.dao.JokeDao
 import com.example.jokeexplorer.data.local.database.AppDatabase
 import com.example.jokeexplorer.data.local.entities.JokeEntity
 import com.example.jokeexplorer.data.mappers.toJokeEntity
 import com.example.jokeexplorer.data.remote.api.JokeApi
-import retrofit2.awaitResponse
 import java.io.IOException
+import java.time.Duration
 
 @OptIn(ExperimentalPagingApi::class)
 class JokeRemoteMediator(
@@ -22,34 +26,54 @@ class JokeRemoteMediator(
     private val api:JokeApi,
     private val dao : JokeDao
 ) : RemoteMediator<Int, JokeEntity>() {
+    override suspend fun initialize() : InitializeAction {
+        return InitializeAction.LAUNCH_INITIAL_REFRESH
+    }
+
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(
         loadType : LoadType,
         state : PagingState<Int, JokeEntity>
     ) : MediatorResult {
+        Log.d("YourRemoteMediator", "Load called with LoadType: $loadType")
         return try {
             val loadKey =when(loadType){
-                LoadType.REFRESH -> 1
-                LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
-                LoadType.APPEND -> {
+                LoadType.REFRESH -> {
                     val lastItem=state.lastItemOrNull()
                     if(lastItem == null){
-                        1
+                        0
+                    }
+                    else {
+                        (lastItem.id/state.config.pageSize) + 1
+                    }
+                }
+                LoadType.PREPEND -> return MediatorResult.Success(endOfPaginationReached = true)
+                LoadType.APPEND  -> {
+                    val lastItem=state.lastItemOrNull()
+                    if(lastItem == null){
+                        0
                     }
                     else {
                         (lastItem.id/state.config.pageSize) + 1
                     }
                 }
             }
-
+            Log.d("loadKey", "$loadKey, ${state.lastItemOrNull()?.id}")
             val jokes=api.getJokesPage(
-                idRange = "${(loadKey-1)*state.config.pageSize}-${(loadKey*state.config.pageSize)-1}"
+                idRange = "${(loadKey)*state.config.pageSize}-${((loadKey+1)*state.config.pageSize)-1}"
             ).jokes
+            Log.d("jokes", "$jokes")
             database.withTransaction {
-                dao.clearAll()
-            }
+               if(loadType==LoadType.REFRESH)
+                    dao.clearAll()
+
             val jokeEntities= jokes.map { it.toJokeEntity() }
-            dao.upsertAll(jokeEntities)
+                Log.d("jokeEntities", "$jokeEntities")
+               if(loadType==LoadType.APPEND)
+                    dao.upsertAll(jokeEntities)
+
+            }
+
             MediatorResult.Success(
                 endOfPaginationReached = jokes.isEmpty()
             )
@@ -62,5 +86,6 @@ class JokeRemoteMediator(
             MediatorResult.Error(e)
         }
     }
+
 
 }

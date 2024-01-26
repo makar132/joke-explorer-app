@@ -3,6 +3,9 @@ package com.example.jokeexplorer.di
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingConfig.Companion.MAX_SIZE_UNBOUNDED
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.example.jokeexplorer.data.local.dao.JokeDao
 import com.example.jokeexplorer.data.local.database.AppDatabase
 import com.example.jokeexplorer.data.local.entities.JokeEntity
@@ -20,13 +23,15 @@ val appModules = module {
     single { get<AppDatabase>().jokeDao() }//dao
     single {NetworkModule().provideRetrofit()}//retrofit class
     single { NetworkModule().provideJokeApi(get())}//api
-    single { JokeRepository(get()) }//repository
+    single { JokeRepository(get(), get()) }//repository
     single { JokeRemoteMediator(get<AppDatabase>(),get<JokeApi>(),get<JokeDao>())}//remote mediator
+    //pagingSource
     single {
         Pager<Int,JokeEntity>(
-            config = PagingConfig(pageSize = 10),
+            config = PagingConfig(pageSize = 10,enablePlaceholders = false, initialLoadSize = 10 ),
             remoteMediator = get<JokeRemoteMediator>(),
-            pagingSourceFactory = {get<JokeDao>().pagingSource()}
+            pagingSourceFactory = {get<JokeDao>().pagingSource()},
+
         )
     }
     viewModel { JokeListViewModel() }

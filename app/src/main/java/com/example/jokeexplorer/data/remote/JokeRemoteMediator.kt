@@ -9,6 +9,7 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
+import com.example.jokeexplorer.data.local.dao.JokeDao
 import com.example.jokeexplorer.data.local.database.AppDatabase
 import com.example.jokeexplorer.data.local.entities.JokeEntity
 import com.example.jokeexplorer.data.mappers.toJokeEntity
@@ -18,7 +19,8 @@ import java.io.IOException
 @OptIn(ExperimentalPagingApi::class)
 class JokeRemoteMediator(
     private val database : AppDatabase,
-    private val api : JokeApi
+    private val api : JokeApi,
+    private val dao:JokeDao
 ) : RemoteMediator<Int, JokeEntity>() {
 
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
@@ -53,12 +55,12 @@ class JokeRemoteMediator(
 
             database.withTransaction {
                 if (loadType == LoadType.REFRESH)
-                    database.dao.clearAll()
+                    dao.clearAll()
 
                 val jokeEntities = jokes.map { it.toJokeEntity() }
                 Log.d("jokeEntities", "$jokeEntities")
                 if (loadType == LoadType.APPEND)
-                    database.dao.upsertAll(jokeEntities)
+                    dao.upsertAll(jokeEntities)
 
             }
 

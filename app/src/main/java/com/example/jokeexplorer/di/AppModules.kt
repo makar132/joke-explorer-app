@@ -3,6 +3,7 @@ package com.example.jokeexplorer.di
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.RemoteMediator
 import androidx.room.Room
 import com.example.jokeexplorer.data.local.dao.JokeDao
 import com.example.jokeexplorer.data.local.database.AppDatabase
@@ -19,8 +20,11 @@ val appModules = module {
         get(),
         AppDatabase::class.java,
         "jokes.db"
-    ).build() }//database
+    ).build() } //database
 
+    single {
+        get<AppDatabase>().dao
+    }
 
     single { Retrofit.Builder()
         .baseUrl(JokeApi.BASE_URL)
@@ -28,14 +32,12 @@ val appModules = module {
         .build()
         .create(JokeApi::class.java)
     }//api
+    single { JokeRemoteMediator(get<AppDatabase>(),get<JokeApi>(),get<JokeDao>())}//remote mediator
     single {
         Pager<Int,JokeEntity>(
             config = PagingConfig(pageSize = 10),
-            remoteMediator = JokeRemoteMediator(
-                database = get<AppDatabase>(),
-                api= get<JokeApi>()
-            ),
-            pagingSourceFactory = {get<AppDatabase>().dao.pagingSource()},
+            remoteMediator = get<JokeRemoteMediator>(),
+            pagingSourceFactory = {get<JokeDao>().pagingSource()},
 
         )
     }//pager

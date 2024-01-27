@@ -5,8 +5,10 @@ import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -37,7 +39,7 @@ fun JokeScreen(jokes:LazyPagingItems<Joke>) {
 
     val listState = rememberLazyListState()
     val context = LocalContext.current
-    LaunchedEffect(key1=jokes.loadState) {
+    LaunchedEffect(jokes.loadState) {
         if (jokes.loadState.refresh is LoadState.Error) {
             Toast.makeText(
                 context,
@@ -57,12 +59,12 @@ fun JokeScreen(jokes:LazyPagingItems<Joke>) {
             } else {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
                     state = listState
                 ) {
-                    items(jokes.itemCount) { index ->
-                        val joke=jokes[index]
+                    items(jokes.itemCount,key=jokes.itemKey { it.id }) { index ->
+                        val joke=jokes[(index)]
                         if(joke != null) {
                             jokeItem(
                                 joke = joke,
@@ -76,12 +78,15 @@ fun JokeScreen(jokes:LazyPagingItems<Joke>) {
                             CircularProgressIndicator()
                         }
                         else {
+                            Row (
+                                horizontalArrangement = Arrangement.Center
+                            ){
                             Text(
                                 text = "---NO MORE DATA--",
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .align(Alignment.Center)
+                                    .wrapContentWidth()
                             )
+                            }
                         }
                     }
                 }

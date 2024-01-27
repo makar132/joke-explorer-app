@@ -28,7 +28,6 @@ class JokeRemoteMediator(
         loadType : LoadType,
         state : PagingState<Int, JokeEntity>
     ) : MediatorResult {
-        Log.d("YourRemoteMediator", "Load called with LoadType: $loadType")
         return try {
             val loadKey = when (loadType) {
                 LoadType.REFRESH -> 0
@@ -58,7 +57,7 @@ class JokeRemoteMediator(
                     dao.clearAll()
 
                 val jokeEntities = jokes.map { it.toJokeEntity() }
-                Log.d("jokeEntities", "$jokeEntities")
+
                 if (loadType == LoadType.APPEND)
                     dao.upsertAll(jokeEntities)
 

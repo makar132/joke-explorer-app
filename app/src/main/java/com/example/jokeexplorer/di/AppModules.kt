@@ -10,6 +10,8 @@ import com.example.jokeexplorer.data.local.database.AppDatabase
 import com.example.jokeexplorer.data.local.entities.JokeEntity
 import com.example.jokeexplorer.data.remote.JokeRemoteMediator
 import com.example.jokeexplorer.data.remote.api.JokeApi
+import com.example.jokeexplorer.presentation.viewmodels.JokeListViewModel
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -41,5 +43,5 @@ val appModules = module {
 
         )
     }//pager
-
+    //viewModel { JokeListViewModel() }
 }

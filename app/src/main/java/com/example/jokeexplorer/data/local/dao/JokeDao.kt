@@ -10,7 +10,7 @@ import com.example.jokeexplorer.data.local.entities.JokeEntity
 import retrofit2.http.DELETE
 @Dao
 interface JokeDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Upsert
     suspend fun upsertAll(jokes : List<JokeEntity>)
 
     @Query("SELECT * FROM JokeEntity Order By id ")

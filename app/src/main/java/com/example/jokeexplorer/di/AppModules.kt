@@ -3,36 +3,41 @@ package com.example.jokeexplorer.di
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
-import androidx.paging.PagingConfig.Companion.MAX_SIZE_UNBOUNDED
-import androidx.paging.PagingSource
-import androidx.paging.PagingState
+import androidx.room.Room
 import com.example.jokeexplorer.data.local.dao.JokeDao
 import com.example.jokeexplorer.data.local.database.AppDatabase
 import com.example.jokeexplorer.data.local.entities.JokeEntity
 import com.example.jokeexplorer.data.remote.JokeRemoteMediator
-import com.example.jokeexplorer.data.remote.NetworkModule
 import com.example.jokeexplorer.data.remote.api.JokeApi
-import com.example.jokeexplorer.data.repository.JokeRepository
-import com.example.jokeexplorer.presentation.viewmodels.JokeListViewModel
-import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
+import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 
 @OptIn(ExperimentalPagingApi::class)
 val appModules = module {
-    single { AppDatabase.getDatabase(get()) }//database
-    single { get<AppDatabase>().jokeDao() }//dao
-    single {NetworkModule().provideRetrofit()}//retrofit class
-    single { NetworkModule().provideJokeApi(get())}//api
-    single { JokeRepository(get(), get()) }//repository
-    single { JokeRemoteMediator(get<AppDatabase>(),get<JokeApi>(),get<JokeDao>())}//remote mediator
-    //pagingSource
+    single {   Room.databaseBuilder(
+        get(),
+        AppDatabase::class.java,
+        "jokes.db"
+    ).build() }//database
+
+
+    single { Retrofit.Builder()
+        .baseUrl(JokeApi.BASE_URL)
+        .addConverterFactory(MoshiConverterFactory.create())
+        .build()
+        .create(JokeApi::class.java)
+    }//api
     single {
         Pager<Int,JokeEntity>(
-            config = PagingConfig(pageSize = 10,enablePlaceholders = false, initialLoadSize = 10 ),
-            remoteMediator = get<JokeRemoteMediator>(),
-            pagingSourceFactory = {get<JokeDao>().pagingSource()},
+            config = PagingConfig(pageSize = 10),
+            remoteMediator = JokeRemoteMediator(
+                database = get<AppDatabase>(),
+                api= get<JokeApi>()
+            ),
+            pagingSourceFactory = {get<AppDatabase>().dao.pagingSource()},
 
         )
-    }
-    viewModel { JokeListViewModel() }
+    }//pager
+
 }

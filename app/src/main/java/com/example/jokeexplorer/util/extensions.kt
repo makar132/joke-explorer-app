@@ -1,15 +1,11 @@
 package com.example.jokeexplorer.util
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.lazy.LazyItemScope
@@ -23,12 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.TileMode
-import com.example.jokeexplorer.data.model.Joke
+import com.example.jokeexplorer.domain.Joke
 import com.example.jokeexplorer.presentation.ui.components.JokeCard
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LazyItemScope.jokeItem(joke : Joke,modifier : Modifier = Modifier) {
+fun LazyItemScope.jokeItem(joke : Joke, modifier : Modifier = Modifier) {
 
 
         JokeCard(

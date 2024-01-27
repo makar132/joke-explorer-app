@@ -1,7 +1,7 @@
 package com.example.jokeexplorer.data.mappers
 
 import com.example.jokeexplorer.data.local.entities.JokeEntity
-import com.example.jokeexplorer.data.model.Joke
+import com.example.jokeexplorer.domain.Joke
 import com.example.jokeexplorer.data.remote.JokeDto
 
 fun JokeDto.toJokeEntity():JokeEntity {
@@ -17,7 +17,7 @@ fun JokeDto.toJokeEntity():JokeEntity {
         language=language
     )
 }
-fun JokeEntity.toJoke():Joke{
+fun JokeEntity.toJoke(): Joke {
     return Joke(
         error=error,
         id=id,

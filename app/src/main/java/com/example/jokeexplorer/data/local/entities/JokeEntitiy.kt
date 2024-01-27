@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
-import com.example.jokeexplorer.data.model.JokeFlags
+import com.example.jokeexplorer.domain.JokeFlags
 
 @Entity
 @TypeConverters(JokeFlagsTypeConverter::class)
@@ -17,7 +17,7 @@ data class JokeEntity(
     val joke: String?=null,
     val setup: String?=null,
     val delivery: String?=null,
-    val flags: JokeFlags=JokeFlags(),
+    val flags: JokeFlags = JokeFlags(),
     val language: String="",
     var localId:Int=0
 )

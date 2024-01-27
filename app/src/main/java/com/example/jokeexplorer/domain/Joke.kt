@@ -1,4 +1,4 @@
-package com.example.jokeexplorer.data.model
+package com.example.jokeexplorer.domain
 data class Joke(
     val error:Boolean=false,
     val id: Int=-1,
@@ -7,7 +7,7 @@ data class Joke(
     val joke: String?=null,
     val setup: String?=null,
     val delivery: String?=null,
-    val flags: JokeFlags=JokeFlags(),
+    val flags: JokeFlags = JokeFlags(),
     val language: String="",
     var localId:Int=0
 ) {

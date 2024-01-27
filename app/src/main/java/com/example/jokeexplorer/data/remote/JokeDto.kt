@@ -1,6 +1,6 @@
 package com.example.jokeexplorer.data.remote
 
-import com.example.jokeexplorer.data.model.JokeFlags
+import com.example.jokeexplorer.domain.JokeFlags
 
 data class JokeDto(
     val error:Boolean=false,

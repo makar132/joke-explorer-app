@@ -12,23 +12,6 @@ import com.example.jokeexplorer.data.local.entities.JokeEntity
     version = 1
 )
 abstract class AppDatabase : RoomDatabase() {
-    abstract fun jokeDao() : JokeDao
+    abstract val dao : JokeDao
 
-    companion object {
-        @Volatile
-        private var instance : AppDatabase? = null
-        fun getDatabase(context : Context) : AppDatabase {
-            return instance ?: synchronized(this)
-            {
-                Room.databaseBuilder(
-                    context = context,
-                    AppDatabase::class.java,
-                    "db"
-                )
-                    .fallbackToDestructiveMigration()
-                    .build()
-                    .also { instance = it }
-            }
-        }
-    }
 }
